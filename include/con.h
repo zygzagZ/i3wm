@@ -345,3 +345,10 @@ void con_set_urgency(Con *con, bool urgent);
  *
  */
 char *con_get_tree_representation(Con *con);
+
+/**
+ * Create a string representing the subtree under con.
+ *
+ */
+bool con_should_gap(Con *con, bool border);
+

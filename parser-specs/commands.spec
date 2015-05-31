@@ -40,6 +40,7 @@ state INITIAL:
   'mode' -> MODE
   'bar' -> BAR
   'gap_size' -> GAP_SIZE
+  'get_representation' -> GET_REPRESENTATION
 
 state CRITERIA:
   ctype = 'class' -> CRITERION
@@ -90,6 +91,11 @@ state BORDER:
 state GAP_SIZE:
   width = word
       -> call cmd_gap_size($width)
+
+# get_representation
+state GET_REPRESENTATION:
+   end
+      -> call cmd_get_representation()
 
 state BORDER_WIDTH:
   end

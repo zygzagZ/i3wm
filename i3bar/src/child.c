@@ -139,6 +139,7 @@ static int stdin_start_array(void *context) {
         first = TAILQ_FIRST(&statusline_head);
         I3STRING_FREE(first->full_text);
         FREE(first->color);
+        FREE(first->bg_color);
         FREE(first->name);
         FREE(first->instance);
         TAILQ_REMOVE(&statusline_head, first, blocks);
@@ -186,6 +187,9 @@ static int stdin_string(void *context, const unsigned char *val, size_t len) {
     }
     if (strcasecmp(ctx->last_map_key, "color") == 0) {
         sasprintf(&(ctx->block.color), "%.*s", len, val);
+    }
+    if (strcasecmp(ctx->last_map_key, "bg_color") == 0) {
+        sasprintf(&(ctx->block.bg_color), "%.*s", len, val);
     }
     if (strcasecmp(ctx->last_map_key, "align") == 0) {
         if (len == strlen("left") && !strncmp((const char *)val, "left", strlen("left"))) {
@@ -246,6 +250,7 @@ static int stdin_end_array(void *context) {
     TAILQ_FOREACH (current, &statusline_head, blocks) {
         DLOG("full_text = %s\n", i3string_as_utf8(current->full_text));
         DLOG("color = %s\n", current->color);
+        DLOG("bg_color = %s\n", current->bg_color);
     }
     DLOG("end of dump\n");
     return 1;

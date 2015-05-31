@@ -2131,5 +2131,11 @@ void cmd_debuglog(I3_CMD, char *argument) {
 void cmd_gap_size(I3_CMD, char *width) {
     int px = atoi(width);
 
+	// workspace_show(con_get_workspace(focused));
     config.gap_size = px;
+    cmd_output->needs_tree_render = true;
+}
+
+void cmd_get_representation(I3_CMD) {
+    LOG("Representation: %s", con_get_tree_representation(croot));
 }
