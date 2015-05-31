@@ -39,6 +39,7 @@ struct status_block {
 
     char *color;
     char *bg_color;
+    int fix_width;
     uint32_t min_width;
     blockalign_t align;
 

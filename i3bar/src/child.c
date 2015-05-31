@@ -227,6 +227,9 @@ static int stdin_integer(void *context, long long val) {
     if (strcasecmp(ctx->last_map_key, "separator_block_width") == 0) {
         ctx->block.sep_block_width = (uint32_t)val;
     }
+    if (strcasecmp(ctx->last_map_key, "fix_width") == 0) {
+        ctx->block.fix_width = (int)val;
+    }
     return 1;
 }
 

@@ -163,8 +163,8 @@ void refresh_statusline(void) {
 	/* Predict the text width of all blocks (in pixels). */
 	bool first = true;
 	TAILQ_FOREACH (block, &statusline_head, blocks) {
-		if (i3string_get_num_bytes(block->full_text) == 0)
-			continue;
+		// if (i3string_get_num_bytes(block->full_text) == 0)
+		// 	continue;
 
 		block->width = predict_text_width(block->full_text);
 
@@ -198,7 +198,7 @@ void refresh_statusline(void) {
 			statusline_width += block->sep_block_width;
 		}
 
-		statusline_width += block->width + block->x_offset + block->x_append;
+		statusline_width += block->width + block->x_offset + block->x_append + block->fix_width;
 	}
 
 	/* If the statusline is bigger than our screen we need to make sure that
@@ -215,8 +215,8 @@ void refresh_statusline(void) {
 	uint32_t x = 0;
 	first = true;
 	TAILQ_FOREACH (block, &statusline_head, blocks) {
-		if (i3string_get_num_bytes(block->full_text) == 0)
-			continue;
+		// if (i3string_get_num_bytes(block->full_text) == 0)
+		// 	continue;
 
 
 		uint32_t colorpixel = (block->color ? get_colorpixel(block->color) : colors.bar_fg);
@@ -231,13 +231,13 @@ void refresh_statusline(void) {
 			uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND;
 			uint32_t values[] = {bg_colorpixel, bg_colorpixel};
 			xcb_change_gc(xcb_connection, statusline_ctx, mask, values);
-			xcb_rectangle_t rect = {x, 0, block->width + block->x_offset + block->x_append, bar_height};
+			xcb_rectangle_t rect = {x, 0, block->fix_width + block->width + block->x_offset + block->x_append, bar_height};
 			xcb_poly_fill_rectangle(xcb_connection, statusline_pm, statusline_ctx, 1, &rect);
 		}
 		first = false;
 		set_font_colors(statusline_ctx, colorpixel, bg_colorpixel);
-		draw_text(block->full_text, statusline_pm, statusline_ctx, x + block->x_offset, 3+1, block->width);
-		x += block->width + block->x_offset + block->x_append;
+		draw_text(block->full_text, statusline_pm, statusline_ctx, x + block->x_offset + block->fix_width/2, 3+1, block->width+block->fix_width);
+		x += block->fix_width + block->width + block->x_offset + block->x_append;
 
 		struct status_block *nextblock = TAILQ_NEXT(block, blocks);
 		uint32_t bg_colorpixel_next = ((nextblock && nextblock->bg_color) ? get_colorpixel(nextblock->bg_color) : colors.bar_bg);
