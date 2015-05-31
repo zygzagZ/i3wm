@@ -294,10 +294,3 @@ void cmd_debuglog(I3_CMD, char *argument);
  */
 
 void cmd_gap_size(I3_CMD, char *width);
-
-/**
- * Implementation of 'get_representation'
- *
- */
-
-void cmd_get_representation(I3_CMD);

@@ -2135,7 +2135,3 @@ void cmd_gap_size(I3_CMD, char *width) {
     config.gap_size = px;
     cmd_output->needs_tree_render = true;
 }
-
-void cmd_get_representation(I3_CMD) {
-    LOG("Representation: %s", con_get_tree_representation(croot));
-}
