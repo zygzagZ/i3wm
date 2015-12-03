@@ -125,29 +125,29 @@ void draw_separator(int x, int height, int width, uint32_t bg_colorpixel, uint32
 	uint32_t values[] = {bg_colorpixel_next, bg_colorpixel};
 	xcb_change_gc(xcb_connection, statusline_ctx, mask, values);
 	
-	uint8_t sep_border = width;
-	if (sep_border > 8) 
-		sep_border = 8;
-	sep_border /= 2;
-	sep_border -= 1;
-	
-	if (height % 2) {
+	if (width >= 0) {
 		xcb_fill_poly(xcb_connection, statusline_pm, statusline_ctx,
-						XCB_POLY_SHAPE_CONVEX,
-						XCB_COORD_MODE_ORIGIN,
-						3,
-						(xcb_point_t[]) {{x, 0},
-			 				  {x-width+sep_border, height/2},
-			 				  {x, height}});
+					XCB_POLY_SHAPE_CONVEX,
+					XCB_COORD_MODE_ORIGIN,
+					4, (xcb_point_t[]){
+			{x, 0},
+			{x-width, height/2 - !(height%2)},
+			{x-width, height/2},
+			{x, height-1}
+		});
 	} else {
 		xcb_fill_poly(xcb_connection, statusline_pm, statusline_ctx,
-						XCB_POLY_SHAPE_CONVEX,
-						XCB_COORD_MODE_ORIGIN,
-						4,
-						(xcb_point_t[]) {{x, -1},
-			 				  {x-width+sep_border, height/2-1},
-			 				  {x-width+sep_border, height/2},
-			 				  {x, height}});
+					XCB_POLY_SHAPE_CONVEX,
+					XCB_COORD_MODE_ORIGIN,
+					7, (xcb_point_t[]){
+			{x+width, 0},
+			{x, height/2-!(height%2)},
+			{x, height/2},
+			{x+width, height-1},
+			{x+width, height},
+			{x, height},
+			{x, 0}
+		});
 	}
 }
 /*
@@ -190,12 +190,12 @@ void refresh_statusline(void) {
 
 		/* If this is not the last block, add some pixels for a separator. */
 		// if (TAILQ_NEXT(block, blocks) != NULL)
-		block->width += block->sep_block_width;
+		block->width += abs(block->sep_block_width);
 
 		/* If this is the first block, add some pixels for separator before it */
 		if (first && block->bg_color && get_colorpixel(block->bg_color) != colors.bar_bg) {
 			first = false;
-			statusline_width += block->sep_block_width;
+			statusline_width += abs(block->sep_block_width);
 		}
 
 		statusline_width += block->width + block->x_offset + block->x_append + block->fix_width;
@@ -225,7 +225,7 @@ void refresh_statusline(void) {
 
 		if (block->bg_color) {
 			if (first && get_colorpixel(block->bg_color) != colors.bar_bg) {
-				x += block->sep_block_width;
+				x += abs(block->sep_block_width);
 				draw_separator(x, bar_height, block->sep_block_width, colors.bar_bg, bg_colorpixel);
 			}
 			uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND;
@@ -1179,8 +1179,9 @@ void init_xcb_late(char *fontname) {
 	/* Load the font */
 	font = load_font(fontname, true);
 	set_font(&font);
-	DLOG("Calculated Font-height: %d\n", font.height);
+
 	bar_height = font.height + logical_px(6);
+	DLOG("Calculated Font-height: %d, effective bar height: %d\n", font.height, bar_height);
 
 	xcb_flush(xcb_connection);
 
