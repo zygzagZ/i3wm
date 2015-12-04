@@ -188,8 +188,6 @@ void refresh_statusline(void) {
 			}
 		}
 
-		/* If this is not the last block, add some pixels for a separator. */
-		// if (TAILQ_NEXT(block, blocks) != NULL)
 		block->width += block->sep_block_width;
 
 		/* If this is the first block, add some pixels for separator before it */
@@ -406,14 +404,17 @@ void handle_button(xcb_button_press_event_t *event) {
 
 		int block_x = 0, last_block_x;
 		int offset = (walk->rect.w - (statusline_width + tray_width)) - logical_px(10);
+		struct status_block *first_block = TAILQ_FIRST(&statusline_head);
+		if (first_block->bg_color && get_colorpixel(first_block->bg_color) != colors.bar_bg) {
+			block_x += first_block->fix_width + first_block->sep_block_width;
+		}
 
 		x = original_x - offset;
 		if (x >= 0) {
 			struct status_block *block;
-
 			TAILQ_FOREACH (block, &statusline_head, blocks) {
 				last_block_x = block_x;
-				block_x += block->width + block->x_offset + block->x_append;
+				block_x += block->fix_width + block->width + block->x_offset + block->x_append;
 
 				if (x <= block_x && x >= last_block_x) {
 					send_block_clicked(event->detail, block->name, block->instance, event->root_x, event->root_y);
