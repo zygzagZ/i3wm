@@ -337,23 +337,29 @@ void manage_window(xcb_window_t window, xcb_get_window_attributes_cookie_t cooki
     }
 
     bool set_focus = false;
-
     if (fs == NULL) {
         DLOG("Not in fullscreen mode, focusing\n");
         if (!cwindow->dock) {
             /* Check that the workspace is visible and on the same output as
              * the current focused container. If the window was assigned to an
              * invisible workspace, we should not steal focus. */
+             
             Con *current_output = con_get_output(focused);
             Con *target_output = con_get_output(ws);
 
             if (workspace_is_visible(ws) && current_output == target_output) {
                 if (!match || !match->restart_mode) {
-                    set_focus = true;
+                    // Commented out to prevent focus stealing
+                    if (focused->type != CT_CON || !workspace_is_visible(con_get_workspace(focused))) {
+	                    set_focus = true;
+                    } else {
+                    	DLOG("not focusing, workspace of focused con is visible!\n");
+                    }
                 } else
                     DLOG("not focusing, matched with restart_mode == true\n");
             } else
                 DLOG("workspace not visible, not focusing\n");
+                
         } else
             DLOG("dock, not focusing\n");
     } else {
