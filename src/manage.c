@@ -349,11 +349,11 @@ void manage_window(xcb_window_t window, xcb_get_window_attributes_cookie_t cooki
 
             if (workspace_is_visible(ws) && current_output == target_output) {
                 if (!match || !match->restart_mode) {
-                    // Commented out to prevent focus stealing
-                    if (focused->type != CT_CON || !workspace_is_visible(con_get_workspace(focused))) {
+                    // Edited to prevent focus stealing
+                    if (focused->type != CT_CON || !workspace_is_visible(con_get_workspace(focused)) || (focused->window && (cwindow->id == focused->window->leader || cwindow->leader == focused->window->id || cwindow->leader == focused->window->leader))) {
 	                    set_focus = true;
                     } else {
-                    	DLOG("not focusing, workspace of focused con is visible!\n");
+                    	DLOG("not focusing, workspace of focused con is visible and new window is not related with focused one!\n");
                     }
                 } else
                     DLOG("not focusing, matched with restart_mode == true\n");
