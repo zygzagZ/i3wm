@@ -190,12 +190,12 @@ void refresh_statusline(void) {
 
 		/* If this is not the last block, add some pixels for a separator. */
 		// if (TAILQ_NEXT(block, blocks) != NULL)
-		block->width += abs(block->sep_block_width);
+		block->width += abs((block->sep_block_width * bar_height - 1)/2);
 
 		/* If this is the first block, add some pixels for separator before it */
 		if (first && block->bg_color && get_colorpixel(block->bg_color) != colors.bar_bg) {
 			first = false;
-			statusline_width += abs(block->sep_block_width);
+			statusline_width += abs((block->sep_block_width * bar_height - 1)/2);
 		}
 
 		statusline_width += block->width + block->x_offset + block->x_append + block->fix_width;
@@ -222,11 +222,11 @@ void refresh_statusline(void) {
 		uint32_t colorpixel = (block->color ? get_colorpixel(block->color) : colors.bar_fg);
 		uint32_t bg_colorpixel = (block->bg_color ? get_colorpixel(block->bg_color) : colors.bar_bg);
 		
-
+		int32_t separator_width = (block->sep_block_width * bar_height - 1)/2;
 		if (block->bg_color) {
 			if (first && get_colorpixel(block->bg_color) != colors.bar_bg) {
-				x += abs(block->sep_block_width);
-				draw_separator(x, bar_height, block->sep_block_width, colors.bar_bg, bg_colorpixel);
+				x += abs(separator_width);
+				draw_separator(x, bar_height, separator_width, colors.bar_bg, bg_colorpixel);
 			}
 			uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND;
 			uint32_t values[] = {bg_colorpixel, bg_colorpixel};
@@ -242,9 +242,9 @@ void refresh_statusline(void) {
 		struct status_block *nextblock = TAILQ_NEXT(block, blocks);
 		uint32_t bg_colorpixel_next = ((nextblock && nextblock->bg_color) ? get_colorpixel(nextblock->bg_color) : colors.bar_bg);
 		if (bg_colorpixel_next != bg_colorpixel) {
-			draw_separator(x, bar_height, block->sep_block_width, bg_colorpixel, bg_colorpixel_next);
-		} else 	if (TAILQ_NEXT(block, blocks) != NULL && !block->no_separator && block->sep_block_width > 0) {
-			uint32_t sep_offset = block->sep_block_width / 2 + block->sep_block_width % 2;
+			draw_separator(x, bar_height, separator_width, bg_colorpixel, bg_colorpixel_next);
+		} else 	if (TAILQ_NEXT(block, blocks) != NULL && !block->no_separator && separator_width > 0) {
+			uint32_t sep_offset = separator_width / 2 + separator_width % 2;
 			uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND | XCB_GC_LINE_WIDTH;
 			uint32_t values[] = {colors.sep_fg, bg_colorpixel, logical_px(1)};
 			xcb_change_gc(xcb_connection, statusline_ctx, mask, values);
@@ -408,7 +408,7 @@ void handle_button(xcb_button_press_event_t *event) {
 		int offset = (walk->rect.w - (statusline_width + tray_width)) - logical_px(10);
 		struct status_block *first_block = TAILQ_FIRST(&statusline_head);
 		if (first_block->bg_color && get_colorpixel(first_block->bg_color) != colors.bar_bg) {
-			block_x += first_block->fix_width + abs(first_block->sep_block_width);
+			block_x += first_block->fix_width + abs((first_block->sep_block_width * bar_height - 1)/2);
 		}
 
 		x = original_x - offset;

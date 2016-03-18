@@ -157,7 +157,7 @@ static int stdin_start_map(void *context) {
     memset(&(ctx->block), '\0', sizeof(struct status_block));
 
     /* Default width of the separator block. */
-    ctx->block.sep_block_width = logical_px(9);
+    ctx->block.sep_block_width = 1.0;
 
     return 1;
 }
@@ -204,6 +204,9 @@ static int stdin_string(void *context, const unsigned char *val, size_t len) {
         ctx->block.min_width = (uint32_t)predict_text_width(text);
         i3string_free(text);
     }
+    if (strcasecmp(ctx->last_map_key, "separator_block_width") == 0) {
+        ctx->block.sep_block_width = atof(val);
+    }
     if (strcasecmp(ctx->last_map_key, "name") == 0) {
         char *copy = (char *)malloc(len + 1);
         strncpy(copy, (const char *)val, len);
@@ -223,9 +226,6 @@ static int stdin_integer(void *context, long long val) {
     parser_ctx *ctx = context;
     if (strcasecmp(ctx->last_map_key, "min_width") == 0) {
         ctx->block.min_width = (uint32_t)val;
-    }
-    if (strcasecmp(ctx->last_map_key, "separator_block_width") == 0) {
-        ctx->block.sep_block_width = (uint32_t)val;
     }
     if (strcasecmp(ctx->last_map_key, "fix_width") == 0) {
         ctx->block.fix_width = (int)val;
