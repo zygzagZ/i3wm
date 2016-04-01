@@ -300,6 +300,7 @@ void unhide_bars(void) {
 			   XCB_CONFIG_WINDOW_WIDTH |
 			   XCB_CONFIG_WINDOW_HEIGHT |
 			   XCB_CONFIG_WINDOW_STACK_MODE;
+
 		values[0] = walk->rect.x;
 		if (config.position == POS_TOP)
 			values[1] = walk->rect.y;
@@ -1793,16 +1794,28 @@ void draw_bars(bool unhide) {
 			if (traypx > 0)
 				traypx += 2;
 			// int16_t height = statusline_width - outputs_walk->rect.w + 4;
-			int16_t height = bar_height;
 			xcb_copy_area(xcb_connection, // conn
 						  statusline_pm,  // source
 						  outputs_walk->buffer, // dest
 						  outputs_walk->bargc,  // gc 
 						  MAX(0, (int16_t)(statusline_width - outputs_walk->rect.w + 4)), 0, // source x, y
 						  MAX(0, (int16_t)(outputs_walk->rect.w - statusline_width - traypx - 4)), 0, // dest x, y
-						  MIN(outputs_walk->rect.w - traypx - 4, (int)statusline_width), height); // width, height
-		}
+						  MIN(outputs_walk->rect.w - traypx - 4, (int)statusline_width), bar_height); // width, height
 
+			/* Clear tray area. If still bugged maybe uncomment this: */
+			/*uint32_t color[] = {colors.bar_bg, colors.bar_bg};
+			xcb_change_gc(xcb_connection,
+						  outputs_walk->bargc,
+						  XCB_GC_FOREGROUND | XCB_GC_BACKGROUND,
+						  &color);*/
+			xcb_rectangle_t rect = {outputs_walk->rect.w - traypx - 4, 0, traypx+4, bar_height};
+			xcb_poly_fill_rectangle(xcb_connection,
+									outputs_walk->buffer,
+									outputs_walk->bargc,
+									1,
+									&rect);
+		}
+		// Draw workspaces
 		if (!config.disable_ws) {
 			i3_ws *ws_walk;
 			TAILQ_FOREACH (ws_walk, outputs_walk->workspaces, tailq) {

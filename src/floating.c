@@ -115,6 +115,8 @@ void floating_enable(Con *con, bool automatic) {
         return;
     }
 
+	con_set_border_style(con, config.default_floating_border, config.default_floating_border_width);
+
     /* 1: If the container is a workspace container, we need to create a new
      * split-container with the same layout and make that one floating. We
      * cannot touch the workspace container itself because floating containers
@@ -315,6 +317,8 @@ void floating_disable(Con *con, bool automatic) {
         LOG("Container isn't floating, not doing anything.\n");
         return;
     }
+
+   	con_set_border_style(con, config.default_border, config.default_border_width);
 
     const bool set_focus = (con == focused);
 
