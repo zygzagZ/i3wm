@@ -119,7 +119,22 @@ static void parse_configuration(const char *override_configpath) {
     LOG("Parsing configfile %s\n", path);
     FREE(current_configpath);
     current_configpath = path;
-    parse_file(path);
+    parse_file(path, true);
+}
+
+
+/*
+ * Loads configuration file without changing current configpath.
+ *
+ */
+void parse_additional_configuration(const char *override_configpath) {
+    char *path = get_config_path(override_configpath);
+    LOG("Parsing additional configfile %s\n", path);
+    char *pp = current_configpath;
+    current_configpath = path;
+    parse_file(path, false);
+    current_configpath = pp;
+    FREE(path);
 }
 
 /*

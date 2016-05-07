@@ -44,8 +44,11 @@
 
 #ifndef TEST_PARSER
 pid_t config_error_nagbar_pid = -1;
-static struct context *context;
+// static struct context *context;
 #endif
+
+
+SLIST_HEAD(variables_head, Variable) variables = SLIST_HEAD_INITIALIZER(&variables);
 
 /*******************************************************************************
  * The data structures used for parsing. Essentially the current state and a
@@ -840,16 +843,21 @@ static char *migrate_config(char *input, off_t size) {
  * parse_config and possibly launching i3-nagbar.
  *
  */
-void parse_file(const char *f) {
-    SLIST_HEAD(variables_head, Variable) variables = SLIST_HEAD_INITIALIZER(&variables);
+void parse_file(const char *f, bool should_cleanup) {
+    LOG("parse file %s, liast of known variables:\n", f);
+
+    struct Variable *vc;
+    SLIST_FOREACH (vc, &variables, variables) {
+        LOG("[%s] = \"%s\"\n", vc->key, vc->value);
+    }
     int fd, ret, read_bytes = 0;
     struct stat stbuf;
     char *buf;
     FILE *fstr;
     char buffer[1026], key[512], value[512];
-
-    if ((fd = open(f, O_RDONLY)) == -1)
+    if ((fd = open(f, O_RDONLY)) == -1) {
         die("Could not open configuration file: %s\n", strerror(errno));
+    }
 
     if (fstat(fd, &stbuf) == -1)
         die("Could not fstat file: %s\n", strerror(errno));
@@ -866,6 +874,7 @@ void parse_file(const char *f) {
 
     if ((fstr = fdopen(fd, "r")) == NULL)
         die("Could not fdopen: %s\n", strerror(errno));
+
 
     while (!feof(fstr)) {
         if (fgets(buffer, 1024, fstr) == NULL) {
@@ -992,11 +1001,15 @@ void parse_file(const char *f) {
         }
     }
 
-    context = scalloc(sizeof(struct context));
+	struct context *context = scalloc(sizeof(struct context));
     context->filename = f;
 
     struct ConfigResultIR *config_output = parse_config(new, context);
-    yajl_gen_free(config_output->json_gen);
+    if (should_cleanup) {
+        assert(config_output->json_gen);
+        yajl_gen_free(config_output->json_gen);
+        config_output->json_gen = 0;
+    }
 
     check_for_duplicate_bindings(context);
 
@@ -1034,13 +1047,14 @@ void parse_file(const char *f) {
     free(context);
     free(new);
     free(buf);
-
-    while (!SLIST_EMPTY(&variables)) {
-        current = SLIST_FIRST(&variables);
-        FREE(current->key);
-        FREE(current->value);
-        SLIST_REMOVE_HEAD(&variables, variables);
-        FREE(current);
+    if (should_cleanup) {
+        while (!SLIST_EMPTY(&variables)) {
+            current = SLIST_FIRST(&variables);
+            FREE(current->key);
+            FREE(current->value);
+            SLIST_REMOVE_HEAD(&variables, variables);
+            FREE(current);
+        }
     }
 }
 

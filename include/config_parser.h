@@ -36,4 +36,4 @@ struct ConfigResultIR *parse_config(const char *input, struct context *context);
  * parse_config and possibly launching i3-nagbar.
  *
  */
-void parse_file(const char *f);
+void parse_file(const char *f, bool should_cleanup);

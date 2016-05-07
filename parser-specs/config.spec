@@ -43,6 +43,7 @@ state INITIAL:
   'ipc_socket', 'ipc-socket'               -> IPC_SOCKET
   'restart_state'                          -> RESTART_STATE
   'popup_during_fullscreen'                -> POPUP_DURING_FULLSCREEN
+  'include'                                -> INCLUDE
   exectype = 'exec_always', 'exec'         -> EXEC
   colorclass = 'client.background'
       -> COLOR_SINGLE
@@ -243,6 +244,11 @@ state RESTART_STATE:
 state POPUP_DURING_FULLSCREEN:
   value = 'ignore', 'leave_fullscreen', 'smart'
       -> call cfg_popup_during_fullscreen($value)
+
+# include <path>
+state INCLUDE:
+  path = string
+      -> call cfg_include($path)
 
 # client.background <hexcolor>
 state COLOR_SINGLE:

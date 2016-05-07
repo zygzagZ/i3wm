@@ -57,6 +57,7 @@ CFGFUN(assign, const char *workspace);
 CFGFUN(ipc_socket, const char *path);
 CFGFUN(restart_state, const char *path);
 CFGFUN(popup_during_fullscreen, const char *value);
+CFGFUN(include, const char *value);
 CFGFUN(color, const char *colorclass, const char *border, const char *background, const char *text, const char *indicator);
 CFGFUN(color_single, const char *colorclass, const char *color);
 CFGFUN(floating_modifier, const char *modifiers);

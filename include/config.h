@@ -326,6 +326,12 @@ struct Barconfig {
  */
 void load_configuration(xcb_connection_t *conn, const char *override_configfile, bool reload);
 
+/*
+ * Loads configuration file without changing current configpath.
+ *
+ */
+void parse_additional_configuration(const char *override_configpath);
+
 /**
  * Ungrabs all keys, to be called before re-grabbing the keys because of a
  * mapping_notify event or a configuration file reload

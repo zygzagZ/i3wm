@@ -372,6 +372,10 @@ CFGFUN(popup_during_fullscreen, const char *value) {
     }
 }
 
+CFGFUN(include, const char *value) {
+	parse_additional_configuration(value);
+}
+
 CFGFUN(color_single, const char *colorclass, const char *color) {
     /* used for client.background only currently */
     config.client.background = get_colorpixel(color);
