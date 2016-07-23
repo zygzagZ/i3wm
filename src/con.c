@@ -1691,7 +1691,9 @@ bool con_should_gap(Con* con, bool border) {
 	while (con) { 
 		// if con is floating or dockarea - no border nor gap
 		// if its really TABBED or STACKED - no gap
-		if ((con_is_floating(con) && !border) || con->type == CT_DOCKAREA || (!border && con->parent && (con->parent->layout == L_STACKED || con->parent->layout == L_TABBED) && con_num_children(con->parent) > 1)) 
+		if (con_is_floating(con))
+			return border;
+		if (con->type == CT_DOCKAREA || (!border && con->parent && (con->parent->layout == L_STACKED || con->parent->layout == L_TABBED) && con_num_children(con->parent) > 1)) 
 			return false;
 
 		// if it has brothers - do GAP
