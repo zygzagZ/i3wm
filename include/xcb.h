@@ -53,7 +53,7 @@
                            XCB_EVENT_MASK_PROPERTY_CHANGE | \
                            XCB_EVENT_MASK_ENTER_WINDOW)
 
-#define xmacro(atom) xcb_atom_t A_ ## atom;
+#define xmacro(atom) xcb_atom_t A_##atom;
 #include "atoms.xmacro"
 #undef xmacro
 
@@ -109,6 +109,16 @@ void xcb_raise_window(xcb_connection_t *conn, xcb_window_t window);
 void xcb_set_window_rect(xcb_connection_t *conn, xcb_window_t window, Rect r);
 
 
+/**
+ * Returns the first supported _NET_WM_WINDOW_TYPE atom.
+ *
+ */
+xcb_atom_t xcb_get_preferred_window_type(xcb_get_property_reply_t *reply);
+
+/**
+ * Returns true if the given reply contains the given data.
+ *
+ */
 bool xcb_reply_contains_atom(xcb_get_property_reply_t *prop, xcb_atom_t atom);
 
 /**

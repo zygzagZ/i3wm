@@ -29,6 +29,7 @@ void match_init(Match *match) {
     memset(match, 0, sizeof(Match));
     match->dock = -1;
     match->urgent = U_DONTCHECK;
+    match->window_type = UINT32_MAX;
 }
 
 /*
@@ -46,6 +47,7 @@ bool match_is_empty(Match *match) {
             match->class == NULL &&
             match->instance == NULL &&
             match->window_role == NULL &&
+            match->window_type == UINT32_MAX &&
             match->urgent == U_DONTCHECK &&
             match->id == XCB_NONE &&
             match->con_id == NULL &&

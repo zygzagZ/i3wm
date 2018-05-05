@@ -162,9 +162,13 @@ state CRITERIA:
   ctype = 'window_role' -> CRITERION
   ctype = 'con_id'      -> CRITERION
   ctype = 'id'          -> CRITERION
+  ctype = 'window_type' -> CRITERION
   ctype = 'con_mark'    -> CRITERION
   ctype = 'title'       -> CRITERION
   ctype = 'urgent'      -> CRITERION
+  ctype = 'workspace'   -> CRITERION
+  ctype = 'tiling', 'floating'
+      -> call cfg_criteria_add($ctype, NULL); CRITERIA
   ']'
       -> call cfg_criteria_pop_state()
 

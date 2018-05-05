@@ -59,6 +59,34 @@ CFGFUN(criteria_add, const char *ctype, const char *cvalue) {
         return;
     }
 
+    if (strcmp(ctype, "window_type") == 0) {
+        if (strcasecmp(cvalue, "normal") == 0) {
+            current_match->window_type = A__NET_WM_WINDOW_TYPE_NORMAL;
+        } else if (strcasecmp(cvalue, "dialog") == 0) {
+            current_match->window_type = A__NET_WM_WINDOW_TYPE_DIALOG;
+        } else if (strcasecmp(cvalue, "utility") == 0) {
+            current_match->window_type = A__NET_WM_WINDOW_TYPE_UTILITY;
+        } else if (strcasecmp(cvalue, "toolbar") == 0) {
+            current_match->window_type = A__NET_WM_WINDOW_TYPE_TOOLBAR;
+        } else if (strcasecmp(cvalue, "splash") == 0) {
+            current_match->window_type = A__NET_WM_WINDOW_TYPE_SPLASH;
+        } else if (strcasecmp(cvalue, "menu") == 0) {
+            current_match->window_type = A__NET_WM_WINDOW_TYPE_MENU;
+        } else if (strcasecmp(cvalue, "dropdown_menu") == 0) {
+            current_match->window_type = A__NET_WM_WINDOW_TYPE_DROPDOWN_MENU;
+        } else if (strcasecmp(cvalue, "popup_menu") == 0) {
+            current_match->window_type = A__NET_WM_WINDOW_TYPE_POPUP_MENU;
+        } else if (strcasecmp(cvalue, "tooltip") == 0) {
+            current_match->window_type = A__NET_WM_WINDOW_TYPE_TOOLTIP;
+        } else if (strcasecmp(cvalue, "notification") == 0) {
+            current_match->window_type = A__NET_WM_WINDOW_TYPE_NOTIFICATION;
+        } else {
+            ELOG("unknown window_type value \"%s\"\n", cvalue);
+            current_match->error = sstrdup("unknown window_type value");
+        }
+        return;
+    }
+
     if (strcmp(ctype, "con_id") == 0) {
         char *end;
         long parsed = strtol(cvalue, &end, 10);
