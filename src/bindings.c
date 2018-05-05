@@ -414,7 +414,7 @@ CommandResult *run_binding(Binding *bind) {
         free(pageraction);
     }
 
-    /* TODO: emit event for running a binding */
+    ipc_send_binding_event("run", bind);
 
     return result;
 }
